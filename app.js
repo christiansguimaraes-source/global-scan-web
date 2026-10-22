@@ -1,5 +1,5 @@
 const $=s=>document.getElementById(s);let pages=[],db;
-if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
+
 const req=indexedDB.open('globalscan',1);req.onupgradeneeded=e=>e.target.result.createObjectStore('files',{keyPath:'id',autoIncrement:true});
 req.onsuccess=e=>{db=e.target.result;list()};
 const tx=m=>db.transaction('files',m).objectStore('files');
