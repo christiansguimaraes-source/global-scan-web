@@ -21,7 +21,7 @@ jobs:
       - name: Build site
         run: |
           mkdir -p _site/icons _site/vendor
-          cp index.html app.js sw.js manifest.webmanifest .nojekyll _site/
+          cp index.html app.js sw.js manifest.webmanifest .nojekyll privacidade.html _site/
           cp vendor/jscanify.js vendor/LICENSE-jspdf _site/vendor/
           for f in icons/*.png.b64; do base64 -d "$f" > "_site/${f%.b64}"; done
           curl -fsSL --retry 3 -o _site/vendor/jspdf.umd.min.js https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js
