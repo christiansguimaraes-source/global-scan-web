@@ -1,0 +1,39 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Global Scan"><meta name="theme-color" content="#0E0E0E">
+<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/icon-180.png">
+<title>Global Scan</title>
+<style>
+:root{--bk:#0E0E0E;--sf:#1A1A1A;--g:#DBBA6A;--lg:#DFBF72;--dg:#84703E}
+*{box-sizing:border-box}body{margin:0;background:var(--bk);color:#eee;font-family:-apple-system,system-ui,sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+header{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--dg)}header img{width:40px;height:40px;border-radius:9px}
+h1{font-size:20px;margin:0;color:var(--g)}h2{color:var(--lg);font-size:16px;margin:18px 16px 8px}
+.btn{display:block;width:calc(100% - 32px);margin:10px 16px;padding:15px;border:0;border-radius:12px;background:linear-gradient(var(--lg),var(--g));color:#111;font-weight:700;font-size:16px;text-align:center}
+.btn.sec{background:var(--sf);color:var(--g);border:1px solid var(--dg)}
+#pages{display:flex;gap:8px;overflow-x:auto;padding:0 16px}#pages div{position:relative}#pages img{height:120px;border:1px solid var(--dg);border-radius:6px}
+#pages button{position:absolute;top:2px;right:2px;background:#000a;color:#fff;border:0;border-radius:50%;width:24px;height:24px}
+.item{display:flex;justify-content:space-between;align-items:center;background:var(--sf);margin:8px 16px;padding:12px;border-radius:10px;border-left:3px solid var(--g)}
+.item small{color:#999}.item span button{background:none;border:0;color:var(--g);font-size:14px;margin-left:8px}
+#status{color:var(--lg);text-align:center;font-size:13px;min-height:18px;margin:6px}
+#edit{position:fixed;inset:0;background:var(--bk);display:none;flex-direction:column;z-index:9}#edit .wrap{flex:1;position:relative;overflow:hidden;touch-action:none}
+#edit canvas{position:absolute;left:0;top:0}#edit .bar{display:flex}#edit .bar .btn{margin:8px}
+input[type=file]{display:none}
+</style></head><body>
+<header><img src="icons/icon-192.png" alt=""><h1>Global Scan</h1></header>
+<div id="status">Carregando motor de digitalização…</div>
+<label class="btn" for="cam">📷 Digitalizar documento</label>
+<input id="cam" type="file" accept="image/*" capture="environment">
+<label class="btn sec" for="gal">🖼️ Importar da galeria</label>
+<input id="gal" type="file" accept="image/*" multiple>
+<h2>Páginas (<span id="n">0</span>)</h2><div id="pages"></div>
+<button class="btn" id="mk">📄 Gerar PDF A4 e salvar</button>
+<h2>Meus Arquivos</h2><div id="list"></div>
+<div id="edit"><div class="wrap" id="wrap"><canvas id="cv"></canvas></div>
+<div id="status2" style="text-align:center;color:#aaa;font-size:13px">Arraste os cantos dourados para ajustar</div>
+<div class="bar"><button class="btn sec" id="cancel">Cancelar</button><button class="btn" id="ok">Recortar página</button></div></div>
+<script src="vendor/jspdf.umd.min.js"></script><script src="vendor/jscanify.js"></script>
+<script>var Module={onRuntimeInitialized(){window.cvReady=true;document.getElementById('status').textContent='Pronto para digitalizar'}}</script>
+<script async src="vendor/opencv.js"></script>
+<script src="app.js"></script>
+</body></html>
