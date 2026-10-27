@@ -1,0 +1,1 @@
+{"name": "Global IA", "short_name": "Global IA", "lang": "pt-BR", "start_url": "./index.html", "scope": "./", "display": "standalone", "background_color": "#0B3D91", "theme_color": "#0B3D91", "icons": [{"src": "assets/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any"}]}
