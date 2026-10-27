@@ -65,10 +65,17 @@ function localGenerate(req,c){const a=analyze(req),T=TONE[c.tom]||TONE.Vendedor;
  const head=headlineFor(req,a);
  const sub=a.pct?`Até ${a.pct}% OFF`:pick(a.themes.includes('promocao')?['Só por tempo limitado','Condições especiais','Aproveite hoje']:a.themes.includes('dica')?['Confira no nosso perfil','Salve para não esquecer']:['Venha conferir','Esperamos você','Só na '+c.name]);
  return{caption,ideas:ideasFor(a,c),hashtags:hashtagsFor(a,c),headline:head,sub,themes:a.themes}}
-/** Ponto único de geração. TODO: quando houver uma API de IA, usar cfg.api (POST {pedido, empresa}) e retornar o mesmo formato {caption, ideas[], hashtags[], headline, sub}. Por padrão usa o motor local. */
-async function generate(req,c){
- // TODO: integrar IA real aqui, ex.: if(c.api){const r=await fetch(c.api,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pedido:req,empresa:c})});return await r.json()}
- return localGenerate(req,c)}
+/** Ponto único de geração: chama o backend de IA (API_URL ou cfg.api); se vazio ou falhar, usa o motor local. */
+const API_URL='https://global-ia-api.christiansguimaraes.workers.dev/generate'; // ex.: 'https://global-ia-backend.<conta>.workers.dev/generate' ou 'http://127.0.0.1:8787/generate'
+function notice(msg){let n=document.getElementById('aiNote');if(!n){n=document.createElement('p');n.id='aiNote';n.style.cssText='font-size:.8em;opacity:.75;margin:.4em 0';const o=document.getElementById('out');o.parentNode.insertBefore(n,o)}n.textContent=msg}
+async function generate(req,c){const url=(c&&c.api)||API_URL;const local=localGenerate(req,c);
+ if(url){try{const ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),20000);
+  const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},signal:ctl.signal,body:JSON.stringify({tipo:mode,pedido:req,negocio:`${c.name} — ${c.ramo}`,tom:c.tom})});clearTimeout(t);
+  if(!r.ok)throw new Error('HTTP '+r.status);const j=await r.json();if(!j.legenda)throw new Error('vazio');
+  notice('✨ Texto gerado com IA. Imagem: modelos locais (imagem com IA disponível após ativar faturamento).');
+  return{caption:j.legenda,ideas:j.ideias?.length?j.ideias:local.ideas,hashtags:j.hashtags?.length?j.hashtags:local.hashtags,headline:(j.titulo||local.headline).slice(0,48),sub:j.subtitulo||local.sub,themes:local.themes,ai:true}}
+ catch(e){notice('⚠️ IA indisponível no momento — usando o gerador local.');return local}}
+ notice('Gerador local (IA não configurada). Imagem com IA disponível após ativar faturamento.');return local}
 
 /* ---------- Motor de imagem (canvas) ---------- */
 const STYLES=['Gradiente','Diagonal','Moldura','Círculos','Faixa'];
