@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WhatsCRM - CRM para Clínicas</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  .status-confirmado { background: #dcfce7; color: #166534; }
+  .status-pendente { background: #fef9c3; color: #854d0e; }
+  .status-faltou { background: #fee2e2; color: #991b1b; }
+</style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <div class="flex h-screen">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-emerald-700 text-white flex flex-col">
+      <div class="p-6 border-b border-emerald-600">
+        <h1 class="text-2xl font-bold flex items-center gap-2">
+          <i class="fab fa-whatsapp"></i> WhatsCRM
+        </h1>
+        <p class="text-emerald-100 text-sm mt-1">CRM para Clínicas</p>
+      </div>
+      <nav class="flex-1 p-4 space-y-2">
+        <button onclick="showSection('dashboard')" class="nav-btn w-full text-left px-4 py-3 rounded-lg hover:bg-emerald-600 flex items-center gap-3">
+          <i class="fas fa-home"></i> Dashboard
+        </button>
+        <button onclick="showSection('pacientes')" class="nav-btn w-full text-left px-4 py-3 rounded-lg hover:bg-emerald-600 flex items-center gap-3">
+          <i class="fas fa-users"></i> Pacientes
+        </button>
+        <button onclick="showSection('agenda')" class="nav-btn w-full text-left px-4 py-3 rounded-lg hover:bg-emerald-600 flex items-center gap-3">
+          <i class="fas fa-calendar-alt"></i> Agenda
+        </button>
+      </nav>
+      <div class="p-4 text-xs text-emerald-200 border-t border-emerald-600">
+        CRM para Clínicas
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="flex-1 overflow-auto">
+      <!-- Dashboard -->
+      <section id="dashboard" class="p-8">
+        <h2 class="text-3xl font-bold mb-6">Dashboard</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div class="bg-white p-6 rounded-xl shadow">
+            <div class="text-emerald-600 text-3xl font-bold" id="total-pacientes">0</div>
+            <div class="text-gray-500">Pacientes</div>
+          </div>
+          <div class="bg-white p-6 rounded-xl shadow">
+            <div class="text-blue-600 text-3xl font-bold" id="hoje">0</div>
+            <div class="text-gray-500">Consultas hoje</div>
+          </div>
+          <div class="bg-white p-6 rounded-xl shadow">
+            <div class="text-amber-600 text-3xl font-bold" id="pendentes">0</div>
+            <div class="text-gray-500">Lembretes pendentes</div>
+          </div>
+        </div>
+        <div class="bg-white rounded-xl shadow p-6">
+          <h3 class="font-semibold mb-4">Próximas consultas</h3>
+          <div id="proximas" class="space-y-3"></div>
+        </div>
+      </section>
+
+      <!-- Pacientes -->
+      <section id="pacientes" class="p-8 hidden">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-3xl font-bold">Pacientes</h2>
+          <button onclick="openModalPaciente()" class="bg-emerald-600 text-white px-5 py-2 rounded-lg hover:bg-emerald-700">
+            <i class="fas fa-plus"></i> Novo Paciente
+          </button>
+        </div>
+        <div class="bg-white rounded-xl shadow overflow-hidden">
+          <table class="w-full">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left">Nome</th>
+                <th class="px-6 py-3 text-left">Telefone</th>
+                <th class="px-6 py-3 text-left">Última consulta</th>
+                <th class="px-6 py-3 text-left">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="lista-pacientes"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Agenda -->
+      <section id="agenda" class="p-8 hidden">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-3xl font-bold">Agenda</h2>
+          <button onclick="openModalConsulta()" class="bg-emerald-600 text-white px-5 py-2 rounded-lg hover:bg-emerald-700">
+            <i class="fas fa-plus"></i> Nova Consulta
+          </button>
+        </div>
+        <div id="lista-consultas" class="space-y-4"></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal Paciente -->
+  <div id="modal-paciente" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-xl p-6 w-full max-w-md">
+      <h3 class="text-xl font-bold mb-4">Novo Paciente</h3>
+      <input id="p-nome" placeholder="Nome completo" class="w-full border rounded-lg px-4 py-2 mb-3">
+      <input id="p-telefone" placeholder="Telefone (ex: 11999999999)" class="w-full border rounded-lg px-4 py-2 mb-3">
+      <input id="p-email" placeholder="E-mail (opcional)" class="w-full border rounded-lg px-4 py-2 mb-4">
+      <div class="flex gap-3">
+        <button onclick="salvarPaciente()" class="flex-1 bg-emerald-600 text-white py-2 rounded-lg">Salvar</button>
+        <button onclick="closeModals()" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Consulta -->
+  <div id="modal-consulta" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-xl p-6 w-full max-w-md">
+      <h3 class="text-xl font-bold mb-4">Nova Consulta</h3>
+      <select id="c-paciente" class="w-full border rounded-lg px-4 py-2 mb-3"></select>
+      <input id="c-data" type="date" class="w-full border rounded-lg px-4 py-2 mb-3">
+      <input id="c-hora" type="time" class="w-full border rounded-lg px-4 py-2 mb-3">
+      <input id="c-tipo" placeholder="Tipo (ex: Fisioterapia, Limpeza)" class="w-full border rounded-lg px-4 py-2 mb-4">
+      <div class="flex gap-3">
+        <button onclick="salvarConsulta()" class="flex-1 bg-emerald-600 text-white py-2 rounded-lg">Agendar</button>
+        <button onclick="closeModals()" class="flex-1 bg-gray-200 py-2 rounded-lg">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+let pacientes = JSON.parse(localStorage.getItem('whatsCRM_pacientes') || '[]');
+let consultas = JSON.parse(localStorage.getItem('whatsCRM_consultas') || '[]');
+
+function save() {
+  localStorage.setItem('whatsCRM_pacientes', JSON.stringify(pacientes));
+  localStorage.setItem('whatsCRM_consultas', JSON.stringify(consultas));
+  renderAll();
+}
+
+function showSection(id) {
+  document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('bg-emerald-600'));
+  event.currentTarget.classList.add('bg-emerald-600');
+}
+
+function renderAll() {
+  // Stats
+  document.getElementById('total-pacientes').textContent = pacientes.length;
+  const hoje = new Date().toISOString().split('T')[0];
+  const consultasHoje = consultas.filter(c => c.data === hoje);
+  document.getElementById('hoje').textContent = consultasHoje.length;
+  document.getElementById('pendentes').textContent = consultas.filter(c => c.status === 'pendente').length;
+
+  // Próximas
+  const proximas = [...consultas]
+    .filter(c => c.data >= hoje)
+    .sort((a,b) => a.data.localeCompare(b.data) || a.hora.localeCompare(b.hora))
+    .slice(0, 5);
+  document.getElementById('proximas').innerHTML = proximas.length
+    ? proximas.map(c => {
+        const p = pacientes.find(x => x.id === c.pacienteId);
+        return `<div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+          <div><strong>${p?.nome || 'Paciente'}</strong> • ${c.tipo}<br><span class="text-sm text-gray-500">${formatDate(c.data)} às ${c.hora}</span></div>
+          <span class="status-${c.status} px-3 py-1 rounded-full text-xs">${c.status}</span>
+        </div>`;
+      }).join('')
+    : '<p class="text-gray-400">Nenhuma consulta próxima</p>';
+
+  // Pacientes
+  document.getElementById('lista-pacientes').innerHTML = pacientes.map(p => `
+    <tr class="border-t">
+      <td class="px-6 py-4">${p.nome}</td>
+      <td class="px-6 py-4">${p.telefone}</td>
+      <td class="px-6 py-4">${p.ultima || '-'}</td>
+      <td class="px-6 py-4">
+        <button onclick="enviarWhatsApp('${p.telefone}', '${p.nome}')" class="text-emerald-600 hover:underline mr-3">WhatsApp</button>
+        <button onclick="excluirPaciente(${p.id})" class="text-red-500">Excluir</button>
+      </td>
+    </tr>
+  `).join('');
+
+  // Consultas
+  document.getElementById('lista-consultas').innerHTML = consultas
+    .sort((a,b) => a.data.localeCompare(b.data) || a.hora.localeCompare(b.hora))
+    .map(c => {
+      const p = pacientes.find(x => x.id === c.pacienteId);
+      return `<div class="bg-white rounded-xl shadow p-5 flex justify-between items-center">
+        <div>
+          <div class="font-semibold">${p?.nome || 'Paciente removido'}</div>
+          <div class="text-sm text-gray-500">${c.tipo} • ${formatDate(c.data)} às ${c.hora}</div>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="status-${c.status} px-3 py-1 rounded-full text-xs">${c.status}</span>
+          <button onclick="enviarLembrete(${c.id})" class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-lg text-sm">Lembrete</button>
+          <button onclick="alterarStatus(${c.id})" class="bg-gray-100 px-3 py-1 rounded-lg text-sm">Status</button>
+        </div>
+      </div>`;
+    }).join('') || '<p class="text-gray-400">Nenhuma consulta agendada</p>';
+}
+
+function formatDate(d) {
+  return new Date(d + 'T00:00').toLocaleDateString('pt-BR');
+}
+
+function openModalPaciente() {
+  document.getElementById('modal-paciente').classList.remove('hidden');
+  document.getElementById('modal-paciente').classList.add('flex');
+}
+function openModalConsulta() {
+  const sel = document.getElementById('c-paciente');
+  sel.innerHTML = pacientes.map(p => `<option value="${p.id}">${p.nome}</option>`).join('') || '<option>Cadastre um paciente primeiro</option>';
+  document.getElementById('modal-consulta').classList.remove('hidden');
+  document.getElementById('modal-consulta').classList.add('flex');
+}
+function closeModals() {
+  document.querySelectorAll('[id^=modal]').forEach(m => {
+    m.classList.add('hidden');
+    m.classList.remove('flex');
+  });
+}
+
+function salvarPaciente() {
+  const nome = document.getElementById('p-nome').value.trim();
+  const telefone = document.getElementById('p-telefone').value.trim().replace(/\D/g, '');
+  if (!nome || !telefone) return alert('Nome e telefone são obrigatórios');
+  pacientes.push({ id: Date.now(), nome, telefone, email: document.getElementById('p-email').value, ultima: null });
+  document.getElementById('p-nome').value = '';
+  document.getElementById('p-telefone').value = '';
+  closeModals();
+  save();
+}
+
+function salvarConsulta() {
+  const pacienteId = +document.getElementById('c-paciente').value;
+  const data = document.getElementById('c-data').value;
+  const hora = document.getElementById('c-hora').value;
+  const tipo = document.getElementById('c-tipo').value.trim();
+  if (!pacienteId || !data || !hora || !tipo) return alert('Preencha todos os campos');
+  consultas.push({ id: Date.now(), pacienteId, data, hora, tipo, status: 'pendente' });
+  closeModals();
+  save();
+}
+
+function excluirPaciente(id) {
+  if (!confirm('Excluir paciente?')) return;
+  pacientes = pacientes.filter(p => p.id !== id);
+  consultas = consultas.filter(c => c.pacienteId !== id);
+  save();
+}
+
+function enviarWhatsApp(telefone, nome) {
+  const msg = encodeURIComponent(`Olá ${nome}, tudo bem? Aqui é da clínica.`);
+  window.open(`https://wa.me/55${telefone}?text=${msg}`, '_blank');
+}
+
+function enviarLembrete(id) {
+  const c = consultas.find(x => x.id === id);
+  const p = pacientes.find(x => x.id === c.pacienteId);
+  if (!p) return;
+  const msg = encodeURIComponent(`Olá ${p.nome}! Lembrete da sua consulta de ${c.tipo} no dia ${formatDate(c.data)} às ${c.hora}. Confirme sua presença respondendo esta mensagem. Obrigado!`);
+  window.open(`https://wa.me/55${p.telefone}?text=${msg}`, '_blank');
+  c.status = 'confirmado';
+  save();
+}
+
+function alterarStatus(id) {
+  const c = consultas.find(x => x.id === id);
+  const ordem = ['pendente', 'confirmado', 'faltou'];
+  c.status = ordem[(ordem.indexOf(c.status) + 1) % ordem.length];
+  save();
+}
+
+// Init
+renderAll();
+showSection('dashboard');
+</script>
+</body>
+</html>
