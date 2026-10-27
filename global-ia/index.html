@@ -1,0 +1,22 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Global IA</title><meta name="theme-color" content="#0B3D91"><link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icon.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Global IA">
+<link rel="stylesheet" href="style.css"></head><body>
+<header><img src="assets/icon.svg" alt=""><h1>Global IA</h1><button id="btnCfg" class="ghost">⚙️ Configurar</button></header>
+<main>
+<section id="setup" class="hidden"><h2>Configuração da empresa</h2>
+<label>Nome da empresa<input id="cName" placeholder="Ex.: Padaria Exemplo"></label>
+<label>Ramo de atividade<input id="cRamo" placeholder="Ex.: padaria, salão, contabilidade"></label>
+<div class="row"><label>Cor principal<input type="color" id="c1" value="#0B3D91"></label><label>Cor secundária<input type="color" id="c2" value="#F5A623"></label></div>
+<label>Logo (imagem)<input type="file" id="cLogo" accept="image/*"></label><img id="logoPrev" class="logoPrev hidden" alt="Logo">
+<label>Tom de voz<select id="cTom"><option>Sério</option><option>Descontraído</option><option selected>Vendedor</option></select></label>
+<details><summary>Avançado (IA externa – opcional)</summary><label>Endpoint de API (não usado por padrão)<input id="cApi" placeholder="https://..."></label></details>
+<button id="saveCfg" class="primary">Salvar e continuar</button></section>
+<section id="home" class="hidden"><p class="hello" id="hello"></p>
+<div class="cards"><button class="card" data-mode="post"><span>✍️</span><b>Assistente de Postagem</b><small>Legenda, ideias e hashtags</small></button>
+<button class="card" data-mode="img"><span>🎨</span><b>Assistente de Imagem</b><small>Artes para feed e story</small></button></div>
+<div class="chat"><textarea id="req" rows="2" placeholder="Ex.: faz um post de promoção de sexta"></textarea>
+<div class="row wrap"><button id="goPost" class="primary">✍️ Postagem</button><button id="goImg" class="primary alt">🎨 Imagem</button><button id="goFull" class="primary full">🚀 Fazer post completo</button></div>
+<div class="chips"><button>faz um post de promoção de sexta</button><button>lançamento de produto novo</button><button>dica para clientes</button><button>post de Dia das Mães</button></div></div>
+<div id="out"></div></section>
+</main><script src="app.js"></script></body></html>
